@@ -1,0 +1,1 @@
+http://weatherstation.wunderground.com/weatherstation/updateweatherstation.php?ID=KPALEWIS25&PASSWORD=uy1yg0ke&dateutc=now&

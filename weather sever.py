@@ -6,7 +6,8 @@ import urllib
 import urllib2
 
 ser = serial.Serial('/dev/ttyUSB0',38400,timeout=.5)
-base_url   = "http://weatherstation.wunderground.com/weatherstation/updateweatherstation.php?ID=KPALEWIS25&PASSWORD=uy1yg0ke&dateutc=now&"
+config= open("config.txt",'r')
+base_url   = config.read() # you have to change config file with your id and password
 filename="/var/tmp/wxdata/data.txt"
 
 while True:         #infinate loop, server always checking for a post
