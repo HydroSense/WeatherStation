@@ -63,13 +63,8 @@ void setup()
   lastSecond = millis();
 
   //Attach interrupts
-  //attachInterrupt(RAIN, rainIRQ, FALLING);
-  // attachInterrupt(WSPEED, wspeedIRQ, FALLING);
   pciSetup(RAIN);
-  //   pciSetup(WSPEED);
   attachInterrupt(digitalPinToInterrupt(WSPEED), wspeedIRQ, FALLING); //davis wind speed
- // interrupts();
-//  sei();
 }
 
 
@@ -153,19 +148,19 @@ void pciSetup(byte pin)
 void rainIRQ()
 {
   wake_up();
-  //Serial.println("HERE 1");
   raintime = millis(); // grab current time
   raininterval = raintime - rainlast;
   if (raininterval > 10) { // ignore bounce glitch
     dailyrainin += 0.01;
     rainlast = raintime;
   }
-  
 }
-
+  
 float get_rain_fall()
 {
-  return dailyrainin;
+  float rainin=dailyrainin;
+  dailyrainin=0;
+  return rainin;
 }
 
 void wspeedIRQ()
@@ -188,7 +183,7 @@ float get_wind_speed()
   windClicks = 0;
   lastWindCheck = millis();
 
-  //  windSpeed *= 1.492; //without this its in m/s
+  windSpeed *= 2.23694; //without this its in m/s
   return windSpeed;
 }
 
@@ -299,6 +294,7 @@ void sendI2C()
 {
   wake_up();
   char buffer[100];
+  char buffer2[100];
   char str_temp[6];
   char str_temp2[6];
   char str_temp3[6];
@@ -311,15 +307,17 @@ void sendI2C()
  // dtostrf(temp, 3, 2, str_temp);
   dtostrf(windSpeed, 3, 2, str_temp2);
   dtostrf(rainin, 3, 2, str_temp3);
-  sprintf(buffer, "+%s+%d+%s\n", str_temp2, windDir,str_temp3);
+  sprintf(buffer, "%d+%s+%s\n", windDir, str_temp2,str_temp3);
+ // sprintf(buffer2,"&rainin=%s\n",str_temp3);
   // sprintf(buffer, "+%.2f+%.2f+%d\n",
   //     Temperature(A3,MINE,10000.0f),
   //     get_wind_speed(),
   //     get_wind_direction());
 
   Serial.print(buffer);
-  Wire.print(buffer);
-
+  //Serial.print(buffer2);
+  Wire.write(buffer);
+//  Wire.print(buffer2);
   
   // Wire.print(Temperature(A4,MINE,10000.0f));
   // Wire.print('+');
